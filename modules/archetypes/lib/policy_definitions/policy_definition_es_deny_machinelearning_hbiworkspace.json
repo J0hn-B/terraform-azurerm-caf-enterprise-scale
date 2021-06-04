@@ -1,16 +1,16 @@
 {
-  "name": "Deny-Subnet-Without-UDR",
+  "name": "Deny-MachineLearning-HbiWorkspace",
   "type": "Microsoft.Authorization/policyDefinitions",
   "apiVersion": "2020-09-01",
   "scope": null,
   "properties": {
     "policyType": "Custom",
-    "mode": "All",
-    "displayName": "Subnets should have a User Defined Route",
-    "description": "This policy denies the creation of a subsnet with out a User Defined Route.",
+    "mode": "Indexed",
+    "displayName": "Deny-MachineLearning-HbiWorkspace",
+    "description": "Enforce high business impact machine learning workspaces across the environment.",
     "metadata": {
       "version": "1.0.0",
-      "category": "Network"
+      "category": "Machine Learning"
     },
     "parameters": {
       "effect": {
@@ -21,8 +21,8 @@
         },
         "allowedValues": [
           "Audit",
-          "Deny",
-          "Disabled"
+          "Disabled",
+          "Deny"
         ],
         "defaultValue": "Deny"
       }
@@ -32,11 +32,19 @@
         "allOf": [
           {
             "field": "type",
-            "equals": "Microsoft.Network/virtualNetworks/subnets"
+            "equals": "Microsoft.MachineLearningServices/workspaces"
           },
           {
-            "field": "Microsoft.Network/virtualNetworks/subnets/routeTable.id",
-            "exists": "false"
+            "anyOf": [
+              {
+                "field": "Microsoft.MachineLearningServices/workspaces/hbiWorkspace",
+                "exists": false
+              },
+              {
+                "field": "Microsoft.MachineLearningServices/workspaces/hbiWorkspace",
+                "notEquals": true
+              }
+            ]
           }
         ]
       },
